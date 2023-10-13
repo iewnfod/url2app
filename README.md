@@ -9,7 +9,7 @@ It is based on `tauri` which is a rust crate.
 
 ## Usage
 ```shell
-url2app [options]
+$ url2app [options]
 ```
 
 ### Options
