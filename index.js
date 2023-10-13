@@ -6,6 +6,7 @@ const os = require('os');
 const path = require("path");
 const fs = require("fs");
 const readline = require("readline-sync");
+const packageJson = require("./package.json");
 
 let userInfo = os.userInfo();
 
@@ -25,7 +26,7 @@ fs.readdirSync(iconPath).forEach(
 program
     .name("url2app")
     .description("A tool to convert a url into a desktop application.")
-    .version("v0.0.2")
+    .version(`v${packageJson.version}`)
     .requiredOption("-u, --url <url>", "target url to convert")
     .requiredOption("-n, --name <name>", "the name of this application")
     .option("-i, --icon-path <icon_path...>", "the icon paths for the application (please use absolute path)", iconPaths)

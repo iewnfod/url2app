@@ -1,10 +1,10 @@
 # Url 2 App
 `url2app` is a tool to convert a url into a desktop application.
-It is based on `tauri` which is a rust crate.
+It is based on a rust crate `tauri`.
 
 ## Installation
 1. Install `node.js` and `rust`
-2. Install this tool: `npm install url2app@latest`
+2. Install this tool `npm install url2app -g`
 3. Use `url2app` command in your console!
 
 ## Usage
