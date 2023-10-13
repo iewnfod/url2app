@@ -1,0 +1,17 @@
+{
+  "name": "url2app",
+  "version": "0.0.1",
+  "description": "A tool to convert web page into a desktop application",
+  "main": "index.js",
+  "bin": {
+    "url2app": "index.js"
+  },
+  "scripts": {},
+  "author": "muyunxi",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "open": "^9.1.0",
+    "readline-sync": "^1.4.10"
+  }
+}
