@@ -13,7 +13,7 @@ let iconPath = path.join(__dirname, "icons");
 let iconPaths = [];
 
 fs.readdirSync(iconPath).forEach(
-    (ele, index) => {
+    (ele, _index) => {
         let info = fs.statSync(path.join(iconPath, ele));
         if (info.isFile()) {
             iconPaths.push(path.join(iconPath, ele));
@@ -36,7 +36,7 @@ program
     .option("-f, --fullscreen", "if the window will be fullscreen when open", false)
     .option("-r, --resize", "if the window can be resized", true)
     .option("-o, --output-dir <output_path>", "the dir that will store the file created", __dirname)
-    .option("-id, --identifier <identifier>", "the identifier for this application");
+    .option("-id, --identifier <identifier>", "the bundle identifier for this application");
 
 // 解析参数
 program.parse();

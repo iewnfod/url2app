@@ -3,10 +3,9 @@ const path = require("path");
 const readline = require('readline-sync');
 const cp = require('child_process');
 const template = require('./template');
-const child_process = require("child_process");
 
 
-let parentDir = __dirname
+let parentDir = __dirname;
 
 function _create_file(path, content) {
     console.log(`Creating File: ${path}`);
@@ -114,6 +113,9 @@ function run(option) {
     // 创建应用
     _create_application(option).then(() => {
         _build_application(option.name);
+        console.log(`Finish Creating Your Application \`${option.name}\``);
+        let result_path = path.join(parentDir, option.name, "src-tauri", "target", "release", "bundle");
+        console.log(`Your application is stored in \`${result_path}\`. You can open it by yourself. `)
     });
 }
 

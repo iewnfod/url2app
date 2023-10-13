@@ -70,6 +70,7 @@ fn main() {
 function cargo_toml(app_name, des) {
     let name = app_name.split(' ').join('_')
     return `
+#[allow(non_snake_case)]
 [package]
 name = "${name}"
 version = "0.0.0"
@@ -150,6 +151,7 @@ function main_rs() {
     return `
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#[allow(non_snake_case)]
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
