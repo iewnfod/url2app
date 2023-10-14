@@ -11,9 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "commander": "^11.0.0",
-    "readline-sync": "^1.4.10"
-  },
-  "devDependencies": {
+    "readline-sync": "^1.4.10",
     "colors-console": "^1.0.3"
   }
 }
