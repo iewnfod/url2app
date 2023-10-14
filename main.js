@@ -2,19 +2,24 @@ const fs = require('fs');
 const path = require("path");
 const readline = require('readline-sync');
 const cp = require('child_process');
+const colors = require('colors-console');
 const template = require('./template');
 
 
 let parentDir = __dirname;
 
 function _create_file(path, content) {
-    console.log(`Creating File: ${path}`);
+    console.log(colors('green', 'Creating File'), path);
     fs.writeFileSync(path, content.toString().trim());
 }
 
 function _create_dir(path) {
-    console.log(`Creating Dir: ${path}`);
+    console.log(colors('green', 'Creating Dir'), path);
     fs.mkdirSync(path);
+}
+
+function _output_message(msg) {
+    console.log(colors('bright', `\n${msg}`));
 }
 
 async function _create_application(option) {
@@ -34,7 +39,7 @@ async function _create_application(option) {
     | | | main.rs
      */
 
-    console.log("Creating Application Dir");
+    _output_message("Creating Application Dir");
 
     let app_name = option.name;
     let dir_path = path.join(parentDir, app_name);
@@ -89,18 +94,20 @@ async function _create_application(option) {
     }
 }
 
+function _run_command(command, cwd) {
+    cp.execSync(command, {
+        cwd: cwd,
+        stdio: "inherit"
+    });
+}
+
 function _build_application(app_name) {
     let dir_path = path.join(parentDir, app_name);
-    console.log("Installing Dependence");
-    cp.execSync("npm install", {
-        cwd: dir_path,
-        stdio: "inherit",
-    });
-    console.log("Building Application")
-    cp.execSync("npm run build", {
-        cwd: dir_path,
-        stdio: "inherit",
-    });
+    _output_message("Installing Dependence");
+    _run_command("npm install", dir_path);
+
+    _output_message("Building Application");
+    _run_command("npm run build", dir_path);
 }
 
 function run(option) {

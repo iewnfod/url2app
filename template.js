@@ -1,3 +1,7 @@
+function _json2String(data) {
+    return JSON.stringify(data, null, 2);
+}
+
 function package_json(app_name) {
     let data = {
         "name": `${app_name}`,
@@ -14,7 +18,7 @@ function package_json(app_name) {
         }
     };
 
-    return JSON.stringify(data);
+    return _json2String(data);
 }
 
 function main_js() {
@@ -58,6 +62,7 @@ function index_html(app_name) {
 </html>
     `;
 }
+
 
 function build_rs() {
     return `
@@ -144,7 +149,7 @@ function tauri_conf_json(app_name, author, icon_paths, des, url, width, height, 
         }
     };
 
-    return JSON.stringify(data);
+    return _json2String(data);
 }
 
 function main_rs() {
