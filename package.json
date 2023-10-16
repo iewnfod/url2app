@@ -1,6 +1,6 @@
 {
   "name": "url2app",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A tool to convert web page into a desktop application",
   "main": "index.js",
   "bin": {
