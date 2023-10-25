@@ -2,7 +2,7 @@
 `url2app` is a tool to convert a url into a desktop application.
 It is based on a rust crate `tauri`.
 
-*This script currently do not support any other system, except macOS.* 
+*This script currently only support macOS.* 
 
 ## Installation
 1. Install `node.js` and `rust`

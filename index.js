@@ -8,17 +8,6 @@ const fs = require("fs");
 const readline = require("readline-sync");
 const packageJson = require("./package.json");
 
-let isMac = os.platform() === "darwin";
-if (!isMac) {
-    let v = readline.question(
-        'Detecting that you are not using macOS. This script might not run properly on your system. Do you want to continue? [y/N] '
-    ).trim().toLowerCase();
-    if (v !== 'y') {
-        console.log("Quit");
-        process.exit();
-    }
-}
-
 let userInfo = os.userInfo();
 
 let iconPath = path.join(__dirname, "icons");
@@ -51,12 +40,25 @@ program
     .option("-id, --identifier <identifier>", "the bundle identifier for this application")
     .option("--debug", "remain all the files created while generation", false);
 
+
 // 解析参数
 program.parse();
 const options = program.opts();
 if (!options.identifier) {
     options.identifier = options.name.split(' ').join('-');
 }
+// 判断是否是 Mac
+let isMac = os.platform() === "darwin";
+if (!isMac) {
+    let v = readline.question(
+        'Discovered that you are not using macOS. This script might not run properly on your system. \nDo you want to continue? [y/N] '
+    ).trim().toLowerCase();
+    if (v !== 'y') {
+        console.log("Quit");
+        process.exit();
+    }
+}
+// 确认并运行
 console.log(options)
 let v = readline.question("Confirm the Profile? [Y/n] ").trim().toLowerCase();
 if (v === 'y' || v === '') {
