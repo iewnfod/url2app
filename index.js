@@ -8,6 +8,17 @@ const fs = require("fs");
 const readline = require("readline-sync");
 const packageJson = require("./package.json");
 
+let isMac = os.platform() === "darwin";
+if (!isMac) {
+    let v = readline.question(
+        'Detecting that you are not using macOS. This script might not run properly on your system. Do you want to continue? [y/N] '
+    ).trim().toLowerCase();
+    if (v !== 'y') {
+        console.log("Quit");
+        process.exit();
+    }
+}
+
 let userInfo = os.userInfo();
 
 let iconPath = path.join(__dirname, "icons");
@@ -37,7 +48,8 @@ program
     .option("-f, --fullscreen", "if the window will be fullscreen when open", false)
     .option("-r, --resize", "if the window can be resized", true)
     .option("-o, --output-dir <output_path>", "the dir that will store the file created", __dirname)
-    .option("-id, --identifier <identifier>", "the bundle identifier for this application");
+    .option("-id, --identifier <identifier>", "the bundle identifier for this application")
+    .option("--debug", "remain all the files created while generation", false);
 
 // 解析参数
 program.parse();

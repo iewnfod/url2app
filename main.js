@@ -122,7 +122,39 @@ function run(option) {
         _build_application(option.name);
         console.log(`Finish Creating Your Application \`${option.name}\``);
         let result_path = path.join(parentDir, option.name, "src-tauri", "target", "release", "bundle");
-        console.log(`Your application is stored in \`${result_path}\`. You can open it by yourself. `)
+        if (option.debug === false) {
+            let save_path = path.join(parentDir, `${option.name}_output`);
+            console.log("Copying bundled files into output dir.");
+            if (fs.existsSync(save_path)) {
+                let v = readline.question(`Dir \`${save_path}\` already exists. Do you want to overwrite it? [Y/n] `).trim().toLowerCase();
+                if (v === 'y' || v === '') {
+                    fs.rmSync(save_path,
+                        {
+                            recursive: true,
+                            force: true,
+                        }
+                    );
+                } else {
+                    console.log("Stop Creating!");
+                    process.exit();
+                }
+            }
+            fs.mkdirSync(save_path);
+            fs.cpSync(result_path, save_path, {
+                recursive: true,
+                force: true,
+            });
+            // 删除生成使用的文件
+            console.log("Removing useless dir.");
+            fs.rmSync(path.join(parentDir, option.name), {
+                recursive: true,
+                force: true,
+            });
+
+            console.log(`Your application is stored in \`${save_path}\`. `);
+        } else {
+            console.log(`Your application is stored in \`${result_path}\`. You can open it by yourself. `)
+        }
     });
 }
 
