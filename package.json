@@ -10,8 +10,8 @@
   "author": "muyunxi",
   "license": "MIT",
   "dependencies": {
+    "colors-console": "^1.0.3",
     "commander": "^11.0.0",
-    "readline-sync": "^1.4.10",
-    "colors-console": "^1.0.3"
+    "readline-sync": "^1.4.10"
   }
 }

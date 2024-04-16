@@ -123,33 +123,30 @@ function run(option) {
         console.log(`Finish Creating Your Application \`${option.name}\``);
         let result_path = path.join(parentDir, option.name, "src-tauri", "target", "release", "bundle");
         if (option.debug === false) {
-            let save_path = path.join(parentDir, `${option.name}_output`);
-            console.log("Copying bundled files into output dir.");
-            if (fs.existsSync(save_path)) {
-                let v = readline.question(`Dir \`${save_path}\` already exists. Do you want to overwrite it? [Y/n] `).trim().toLowerCase();
-                if (v === 'y' || v === '') {
-                    fs.rmSync(save_path,
-                        {
-                            recursive: true,
-                            force: true,
-                        }
-                    );
-                } else {
-                    console.log("Stop Creating!");
-                    process.exit();
-                }
+            let temp_save_path = path.join(parentDir, `.${option.name}_temp`);
+            let save_path = path.join(parentDir, `${option.name}`);
+            console.log("Copying result files and removing useless dirs.");
+            // 判断并创建临时文件夹
+            let decoration = 0;
+            while (fs.existsSync(temp_save_path + ( decoration ? '' : `${decoration}` ))) {
+                decoration ++;
             }
-            fs.mkdirSync(save_path);
-            fs.cpSync(result_path, save_path, {
+            temp_save_path = temp_save_path + (decoration ? '' : `${decoration}`);
+            fs.mkdirSync(temp_save_path);
+
+            let fsOptions = {
                 recursive: true,
-                force: true,
-            });
+                cwd: parentDir,
+            };
+            // 复制到临时目录
+            fs.cpSync(result_path, temp_save_path, fsOptions);
             // 删除生成使用的文件
-            console.log("Removing useless dir.");
-            fs.rmSync(path.join(parentDir, option.name), {
-                recursive: true,
-                force: true,
-            });
+            fs.rmSync(path.join(parentDir, option.name), fsOptions);
+            // 复制到保存目录
+            fs.mkdirSync(save_path);
+            fs.cpSync(temp_save_path, save_path, fsOptions);
+            // 删除临时目录
+            fs.rmSync(temp_save_path, fsOptions);
 
             console.log(`Your application is stored in \`${save_path}\`. `);
         } else {
