@@ -1,6 +1,6 @@
 {
   "name": "url2app",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "A tool to convert web page into a desktop application",
   "main": "index.js",
   "bin": {
@@ -13,5 +13,8 @@
     "colors-console": "^1.0.3",
     "commander": "^11.0.0",
     "readline-sync": "^1.4.10"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9"
   }
 }

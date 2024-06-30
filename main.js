@@ -90,7 +90,7 @@ async function _create_application(option) {
         );
         // src-tauri / src
         _create_dir(path.join(dir_path, "src-tauri", "src"));
-        _create_file(path.join(dir_path, "src-tauri", "src", "main.rs"), template.main_rs());
+        _create_file(path.join(dir_path, "src-tauri", "src", "main.rs"), template.main_rs(app_name));
     }
 }
 
@@ -148,9 +148,9 @@ function run(option) {
             // 删除临时目录
             fs.rmSync(temp_save_path, fsOptions);
 
-            console.log(`Your application is stored in \`${save_path}\`. `);
+            console.log(`Your application is stored in \`${save_path}\`.`);
         } else {
-            console.log(`Your application is stored in \`${result_path}\`. You can open it by yourself. `)
+            console.log(`Your application is stored in \`${result_path}\`.`)
         }
     });
 }

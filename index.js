@@ -8,6 +8,8 @@ const fs = require("fs");
 const readline = require("readline-sync");
 const packageJson = require("./package.json");
 
+console.log("");
+
 let userInfo = os.userInfo();
 
 let iconPath = path.join(__dirname, "icons");
@@ -24,19 +26,19 @@ fs.readdirSync(iconPath).forEach(
 
 // 参数设置
 program
-    .name("url2app")
+    .name(`${packageJson.name}`)
     .description("A tool to convert a url into a desktop application.")
-    .version(`v${packageJson.version}`, '-v, --version')
+    .version(`${packageJson.version}`, '-v, --version')
     .requiredOption("-u, --url <url>", "target url to convert")
     .requiredOption("-n, --name <name>", "the name of this application")
     .option("-i, --icon-path <icon_path...>", "the icon paths for the application (please use absolute path)", iconPaths)
     .option("-d, --description <description>", "a short description for this application", "A desktop application for the website")
     .option("-a, --author <author>", "the author of this application", userInfo.username)
-    .option("-w, --width <width>", "the default width of the window", "800")
-    .option("-h, --height <height>", "the default height of the window", "600")
+    .option("-w, --width <width>", "the default width of the window", "1300")
+    .option("-h, --height <height>", "the default height of the window", "850")
     .option("-f, --fullscreen", "if the window will be fullscreen when open", false)
     .option("-r, --resize", "if the window can be resized", true)
-    .option("-o, --output-dir <output_path>", "the dir that will store the file created", __dirname)
+    .option("-o, --output-dir <output_path>", "the dir that will store the file created", process.cwd())
     .option("-id, --identifier <identifier>", "the bundle identifier for this application")
     .option("--debug", "remain all the files created while generation", false);
 
@@ -47,6 +49,7 @@ const options = program.opts();
 if (!options.identifier) {
     options.identifier = options.name.split(' ').join('-');
 }
+
 // 判断是否是 Mac
 let isMac = os.platform() === "darwin";
 if (!isMac) {
@@ -58,6 +61,7 @@ if (!isMac) {
         process.exit();
     }
 }
+
 // 确认并运行
 console.log(options)
 let v = readline.question("Confirm the Profile? [Y/n] ").trim().toLowerCase();

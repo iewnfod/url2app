@@ -90,7 +90,12 @@ edition = "2021"
 tauri-build = { version = "1.5", features = [] }
 
 [dependencies]
-tauri = { version = "1.5", features = ["shell-open"] }
+tauri = { version = "1.5", features = [
+    "fs-all",
+    "window-all",
+    "dialog-all",
+    "shell-open",
+] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
@@ -102,8 +107,6 @@ custom-protocol = ["tauri/custom-protocol"]
 }
 
 function tauri_conf_json(app_name, author, icon_paths, des, url, width, height, fullscreen, resize, id) {
-    let label = des.trim().split(' ').join('_');
-    let id_name = id;
     let w = parseInt(width);
     let h = parseInt(height);
     let data = {
@@ -120,16 +123,12 @@ function tauri_conf_json(app_name, author, icon_paths, des, url, width, height, 
         },
         "tauri": {
             "allowlist": {
-                "all": false,
-                "shell": {
-                    "all": false,
-                    "open": true
-                }
+                "all": true,
             },
             "bundle": {
                 "active": true,
                 "targets": "all",
-                "identifier": `com.${id_name}.${author}`,
+                "identifier": id || `com.${author.toLowerCase()}.${app_name.toLowerCase()}`,
                 "icon": icon_paths
             },
             "security": {
@@ -139,7 +138,7 @@ function tauri_conf_json(app_name, author, icon_paths, des, url, width, height, 
                 {
                     "fullscreen": fullscreen,
                     "resizable": resize,
-                    "label": `${label}`,
+                    "label": "main",
                     "title": `${app_name}`,
                     "url": `${url}`,
                     "width": w,
@@ -152,23 +151,106 @@ function tauri_conf_json(app_name, author, icon_paths, des, url, width, height, 
     return _json2String(data);
 }
 
-function main_rs() {
+function main_rs(app_name) {
     return `
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 #[allow(non_snake_case)]
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+use tauri::{AppHandle, CustomMenuItem, Manager, Menu, Submenu};
+
+const INJECT_SCRIPT: &str = "
+if (!window.__INJECT_SCRIPT_LOADED__) {
+    window.onload = () => {
+        document.querySelectorAll('a').forEach((ele) => {
+            ele.addEventListener('click', (e) => {
+                let targetEle = e.target.closest('a')
+                if (targetEle && targetEle.href && targetEle.target === '_blank') {
+                    window.location.href = targetEle.href
+                }
+            })
+            console.log('Finish redefining element', ele)
+        })
+    }
+
+    window.open = (url) => {
+        window.location.href = url
+    }
+
+    console.log('Finish injecting scripts')
+    window.__INJECT_SCRIPT_LOADED__ = true
+}
+";
+const BACK_SCRIPT: &str = "window.history.back()";
+const FORWARD_SCRIPT: &str = "window.history.forward()";
+const RELOAD_SCRIPT: &str = "window.location.reload()";
+
+fn main_loop(app_handle: &AppHandle, event: tauri::RunEvent) {
+    let main_window = match app_handle.get_window("main") {
+        Some(w) => w,
+        None => return
+    };
+    main_window.eval(INJECT_SCRIPT).unwrap();
+
+    match event {
+        tauri::RunEvent::WindowEvent { label, event, .. } => match event {
+            tauri::WindowEvent::CloseRequested { api, .. } => {
+                #[cfg(target_os = "macos")]
+                tauri::AppHandle::hide(
+                    &app_handle.get_window(label.as_str()).unwrap().app_handle(),
+                ).unwrap();
+
+                #[cfg(not(target_os = "macos"))]
+                app_handle
+                    .get_window(label.as_str())
+                    .unwrap()
+                    .hide()
+                    .unwrap();
+
+                api.prevent_close();
+            },
+            _ => {}
+        },
+        _ => {}
+    }
+}
+
+fn get_menu() -> Menu {
+    Menu::os_default("${app_name}")
+        .add_submenu(
+            Submenu::new(
+            "Control",
+            Menu::new()
+                .add_item(CustomMenuItem::new("back", "Go Back").accelerator("Command+["))
+                .add_item(CustomMenuItem::new("forward", "Go Forward").accelerator("Command+]"))
+                .add_item(CustomMenuItem::new("reload", "Reload").accelerator("Command+R"))
+            )
+        )
 }
 
 fn main() {
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
-        .run(tauri::generate_context!())
-        .unwrap();
+    let menu = get_menu();
+
+    let builder = tauri::Builder::default()
+        .menu(menu)
+        .on_menu_event(|event| {
+            match event.menu_item_id() {
+                "back" => {
+                    event.window().eval(BACK_SCRIPT).unwrap();
+                },
+                "forward" => {
+                    event.window().eval(FORWARD_SCRIPT).unwrap();
+                },
+                "reload" => {
+                    event.window().eval(RELOAD_SCRIPT).unwrap();
+                },
+                _ => {}
+            }
+        });
+
+    let app = builder.build(tauri::generate_context!()).unwrap();
+
+    app.run(main_loop);
 }
     `;
 }
